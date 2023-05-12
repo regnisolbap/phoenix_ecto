@@ -82,7 +82,7 @@ if Code.ensure_loaded?(Phoenix.HTML) do
 
           for {changeset, index} <- Enum.with_index(changesets) do
             %{data: data, params: params} =
-              changeset = to_changeset(changeset, parent_action, module, cast)
+              changeset = to_changeset(changeset, parent_action, module, cast, index)
 
             index_string = Integer.to_string(index)
 
@@ -249,8 +249,8 @@ if Code.ensure_loaded?(Phoenix.HTML) do
     defp to_changeset(%{} = data, parent_action, _module, nil),
       do: apply_action(Ecto.Changeset.change(data), parent_action)
 
-    defp cast!(cast, data) do
-      case cast.(data, %{}) do
+    defp cast!(cast, data, index) do
+      case cast.(data, %{}, index) do
         %Ecto.Changeset{} = changeset ->
           changeset
 
@@ -259,9 +259,9 @@ if Code.ensure_loaded?(Phoenix.HTML) do
                   "got: #{inspect(other)}"
       end
     end
-
-    defp cast!(cast, data, index) do
-      case cast.(data, %{}, index) do
+    
+    defp cast!(cast, data) do
+      case cast.(data, %{}) do
         %Ecto.Changeset{} = changeset ->
           changeset
 
